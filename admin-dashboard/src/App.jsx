@@ -8,6 +8,7 @@ import LeakageForm from "./components/LeakagePage/LeakageForm";
 import LeakagePage from "./components/LeakagePage/LeakagePage";
 import AuditForm from "./components/LeakagePage/AuditForm";
 import ClaimDetail from "./components/ClaimsPages/ClaimDetail";
+import ClaimSubDashboard from "./components/ClaimSubPages/ClaimSubDashboard";
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
             <Route path="/auditForm" element={<AuditForm/>} />
 
             <Route path="/claimDetail" element={<ClaimDetail/>} />
+            <Route path="/claimSubDashboard" element={<ClaimSubDashboard/>} />
 
             
           </Routes>

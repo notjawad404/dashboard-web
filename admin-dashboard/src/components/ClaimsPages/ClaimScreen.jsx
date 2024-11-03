@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-
-import placeholderImg from '../../assets/Image.png'
+import { useNavigate } from "react-router-dom";
+import placeholderImg from '../../assets/Image.png';
 
 const ClaimScreen = () => {
   // Initial data and state
@@ -15,6 +15,8 @@ const ClaimScreen = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const claimsPerPage = 12;
   const [sortDirection, setSortDirection] = useState({ sortBy: "new", active: false });
+
+  const navigate = useNavigate();
 
   // Fetch data from the API
   useEffect(() => {
@@ -104,6 +106,11 @@ const ClaimScreen = () => {
     handleFilterChange({ claimAmount: [minAmount, maxAmount] });
   };
 
+  // Navigate to Claim Subdashboard
+  const navigateToClaimDashboard = (claimId) => {
+    navigate(`/claimsubdashboard/${claimId}`);
+  };
+
   return (
     <div className="flex">
       {/* Sidebar */}
@@ -134,7 +141,6 @@ const ClaimScreen = () => {
         </div>
         <div>
           <label className="block mb-2 font-semibold">Claim Evaluation</label>
-          {/* Single Range Slider for Min/Max */}
           <input
             type="range"
             min="0"
@@ -194,15 +200,17 @@ const ClaimScreen = () => {
         </div>
 
         {/* Claims Grid */}
-        <div className="grid grid-cols-6 gap-4">
+        <div className="grid grid-cols-6 gap-2">
           {currentClaims.length > 0 ? (
             currentClaims.map((claim) => (
-              <div key={claim._id} className="bg-gray-100 p-4 rounded shadow-md">
+              <div 
+                key={claim._id} 
+                className="my-1 cursor-pointer" 
+                onClick={() => navigateToClaimDashboard(claim._id)}
+              >
                 <img src={placeholderImg} alt="" className="w-full h-20" />
                 <h3 className=" text-sm font-bold">{claim.claimNo}</h3>
                 <p className="text-xs text-gray-600">{formatDate(claim.claimDate)}</p>
-              
-                
               </div>
             ))
           ) : (
