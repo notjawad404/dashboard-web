@@ -1,54 +1,61 @@
 import { useState, useEffect } from "react";
 
+import placeholderImg from '../../assets/Image.png'
+
 const ClaimScreen = () => {
   // Initial data and state
   const [claims, setClaims] = useState([]);
   const [filteredClaims, setFilteredClaims] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
-    price: [0, 50000],
+    claimAmount: [0, 50000],
     risk: "all",
     sortBy: "new",
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const claimsPerPage = 12; // 12 claims per page
-  const [showRiskDropdown, setShowRiskDropdown] = useState(false); // State for dropdown visibility
-
-  // State to manage sort direction
+  const claimsPerPage = 12;
   const [sortDirection, setSortDirection] = useState({ sortBy: "new", active: false });
 
-  // Mock data generation
+  // Fetch data from the API
   useEffect(() => {
-    const mockData = [...Array(1000)].map((_, idx) => ({
-      id: idx + 1,
-      title: `Claim ${idx + 1}`,
-      date: new Date(Date.now() - Math.floor(Math.random() * 10) * 24 * 60 * 60 * 1000).toISOString(), // Random date within the last 10 days
-      price: Math.floor(Math.random() * 50000),
-      risk: ["low", "medium", "high"][Math.floor(Math.random() * 3)],
-    }));
-    setClaims(mockData);
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:5051/api/claims");
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const data = await response.json();
+        setClaims(data);  // Set the fetched data to the claims state
+      } catch (error) {
+        console.error("Error fetching claims:", error);
+      }
+    };
+    fetchData();
   }, []);
 
   // Apply filters, search, and sorting
   useEffect(() => {
     let result = claims.filter(claim =>
-      claim.title.toLowerCase().includes(searchQuery.toLowerCase())
+      claim.claimNo.toLowerCase().includes(searchQuery.toLowerCase())
     );
     if (filters.risk !== "all") result = result.filter(claim => claim.risk === filters.risk);
-    if (filters.price) result = result.filter(claim => claim.price >= filters.price[0] && claim.price <= filters.price[1]);
+    if (filters.claimAmount) {
+      result = result.filter(
+        claim =>
+          claim.claimAmount >= filters.claimAmount[0] &&
+          claim.claimAmount <= filters.claimAmount[1]
+      );
+    }
 
     // Sort claims based on the selected filter
     if (sortDirection.active) {
-      if (sortDirection.sortBy === "price-asc") {
-        result.sort((a, b) => a.price - b.price);
-      } else if (sortDirection.sortBy === "price-desc") {
-        result.sort((a, b) => b.price - a.price);
+      if (sortDirection.sortBy === "claimAmount-asc") {
+        result.sort((a, b) => a.claimAmount - b.claimAmount);
+      } else if (sortDirection.sortBy === "claimAmount-desc") {
+        result.sort((a, b) => b.claimAmount - a.claimAmount);
       } else {
-        result.sort((a, b) => new Date(b.date) - new Date(a.date));
+        result.sort((a, b) => new Date(b.claimDate) - new Date(a.claimDate));
       }
-    } else {
-      // Reset sorting to the original order if not active
-      result = [...claims];
     }
 
     setFilteredClaims(result);
@@ -58,14 +65,12 @@ const ClaimScreen = () => {
   const handleSearchChange = (e) => setSearchQuery(e.target.value);
   const handleFilterChange = (newFilters) => setFilters(prev => ({ ...prev, ...newFilters }));
   
-  // Updated handler for sorting changes
   const handleSortChange = (sortOption) => {
     setSortDirection(prev => {
-      // Check if the same sort option is clicked again
       if (prev.sortBy === sortOption) {
-        return { sortBy: sortOption, active: !prev.active }; // Toggle active state
+        return { sortBy: sortOption, active: !prev.active };
       }
-      return { sortBy: sortOption, active: true }; // Activate new sort option
+      return { sortBy: sortOption, active: true };
     });
   };
 
@@ -91,50 +96,63 @@ const ClaimScreen = () => {
   const buttonStyle = "border border-gray-300 rounded-xl";
   const activeButtonStyle = "bg-black text-white";
 
+  const handleSliderChange = (e) => {
+    const value = parseInt(e.target.value);
+    const minAmount = Math.min(value, filters.claimAmount[1]);
+    const maxAmount = Math.max(value, filters.claimAmount[0]);
+
+    handleFilterChange({ claimAmount: [minAmount, maxAmount] });
+  };
+
   return (
     <div className="flex">
       {/* Sidebar */}
       <div className="w-40 p-4 border-r">
         <h2 className="text-lg font-bold mb-2">Filters</h2>
         <div className="py-2">
-        <section className="flex flex-row py-1">
-        <input type="checkbox" className="mr-2" /> <section className="flex flex-col"> <p>FNOL</p> <span className="text-xs text-gray-600">Claim Opened</span></section>        
-        </section>
-
-        <section className="flex flex-row py-1">
-        <input type="checkbox" className="mr-2" /> <section className="flex flex-col"> <p>Appraisal</p> <span className="text-xs text-gray-600">Claim Evalated</span></section>        
-        </section>        
-        
-        <section className="flex flex-row py-1">
-        <input type="checkbox" className="mr-2" /> <section className="flex flex-col"> <p>Adjusted</p> <span className="text-xs text-gray-600">Claim Paid</span></section>        
-        </section>
-      </div>
+          <section className="flex flex-row py-1">
+            <input type="checkbox" className="mr-2" />
+            <section className="flex flex-col">
+              <p>FNOL</p>
+              <span className="text-xs text-gray-600">Claim Opened</span>
+            </section>
+          </section>
+          <section className="flex flex-row py-1">
+            <input type="checkbox" className="mr-2" />
+            <section className="flex flex-col">
+              <p>Appraisal</p>
+              <span className="text-xs text-gray-600">Claim Evaluated</span>
+            </section>
+          </section>
+          <section className="flex flex-row py-1">
+            <input type="checkbox" className="mr-2" />
+            <section className="flex flex-col">
+              <p>Adjusted</p>
+              <span className="text-xs text-gray-600">Claim Paid</span>
+            </section>
+          </section>
+        </div>
         <div>
           <label className="block mb-2 font-semibold">Claim Evaluation</label>
+          {/* Single Range Slider for Min/Max */}
           <input
             type="range"
             min="0"
             max="50000"
+            value={filters.claimAmount[0]}
+            onChange={handleSliderChange}
             className="range"
-            value={filters.price[1]}
-            onChange={(e) => handleFilterChange({ price: [0, e.target.value] })}
           />
-          <div className="text-sm text-gray-600">Up to ${filters.price[1]}</div>
-        </div>
-        <div className="mb-4">
-          <label className="block mb-2 font-semibold">Branch</label>
-          <div>
-            <input type="checkbox" className="mr-2" /> Auto <br />
-            <input type="checkbox" className="mr-2" /> Home <br />
-            <input type="checkbox" className="mr-2" /> Health <br />
-          </div>
-        </div>
-        <div className="mb-4">
-          <label className="block mb-2 font-semibold">Flags</label>
-          <div>
-            <input type="checkbox" className="mr-2" /> Fraud <br />
-            <input type="checkbox" className="mr-2" /> Leakage <br />
-            <input type="checkbox" className="mr-2" /> Litigation <br />
+          <input
+            type="range"
+            min="0"
+            max="50000"
+            value={filters.claimAmount[1]}
+            onChange={handleSliderChange}
+            className="range mt-2"
+          />
+          <div className="text-sm text-gray-600">
+            Range: ${filters.claimAmount[0]} - ${filters.claimAmount[1]}
           </div>
         </div>
       </div>
@@ -159,35 +177,19 @@ const ClaimScreen = () => {
               New
             </button>
             <button
-              onClick={() => handleSortChange("price-asc")}
-              className={`${buttonStyle} w-40 ${sortDirection.active && sortDirection.sortBy === "price-asc" ? activeButtonStyle : ""}`}
+              onClick={() => handleSortChange("claimAmount-asc")}
+              className={`${buttonStyle} w-40 ${sortDirection.active && sortDirection.sortBy === "claimAmount-asc" ? activeButtonStyle : ""}`}
             >
-              {sortDirection.active && sortDirection.sortBy === "price-asc" && <span className="ml-1">✓</span>}
-              Price Ascending
+              {sortDirection.active && sortDirection.sortBy === "claimAmount-asc" && <span className="ml-1">✓</span>}
+              Amount Ascending
             </button>
             <button
-              onClick={() => handleSortChange("price-desc")}
-              className={`${buttonStyle} w-40 ${sortDirection.active && sortDirection.sortBy === "price-desc" ? activeButtonStyle : ""}`}
+              onClick={() => handleSortChange("claimAmount-desc")}
+              className={`${buttonStyle} w-40 ${sortDirection.active && sortDirection.sortBy === "claimAmount-desc" ? activeButtonStyle : ""}`}
             >
-              {sortDirection.active && sortDirection.sortBy === "price-desc" && <span className="ml-1">✓</span>}
-              Price Descending
+              {sortDirection.active && sortDirection.sortBy === "claimAmount-desc" && <span className="ml-1">✓</span>}
+              Amount Descending
             </button>
-            <div className="relative">
-              <button
-                className={`${buttonStyle} px-2 py-3`}
-                onClick={() => setShowRiskDropdown(prev => !prev)}
-              >
-                Risk
-              </button>
-              {showRiskDropdown && (
-                <div className="absolute mt-2 bg-white border rounded shadow-lg z-10">
-                  <div onClick={() => handleFilterChange({ risk: "all" })} className="p-2 hover:bg-gray-100 cursor-pointer">All</div>
-                  <div onClick={() => handleFilterChange({ risk: "low" })} className="p-2 hover:bg-gray-100 cursor-pointer">Low</div>
-                  <div onClick={() => handleFilterChange({ risk: "medium" })} className="p-2 hover:bg-gray-100 cursor-pointer">Medium</div>
-                  <div onClick={() => handleFilterChange({ risk: "high" })} className="p-2 hover:bg-gray-100 cursor-pointer">High</div>
-                </div>
-              )}
-            </div>
           </div>
         </div>
 
@@ -195,9 +197,12 @@ const ClaimScreen = () => {
         <div className="grid grid-cols-6 gap-4">
           {currentClaims.length > 0 ? (
             currentClaims.map((claim) => (
-              <div key={claim.id} className="bg-gray-100 p-4 rounded shadow-md">
-                <h3 className="text-lg font-bold">{claim.title}</h3>
-                <p className="text-gray-600">{formatDate(claim.date)}</p>
+              <div key={claim._id} className="bg-gray-100 p-4 rounded shadow-md">
+                <img src={placeholderImg} alt="" className="w-full h-20" />
+                <h3 className=" text-sm font-bold">{claim.claimNo}</h3>
+                <p className="text-xs text-gray-600">{formatDate(claim.claimDate)}</p>
+              
+                
               </div>
             ))
           ) : (

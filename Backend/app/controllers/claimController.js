@@ -4,7 +4,7 @@ const Claim = require('../models/Claim');
 exports.getAllClaims = async (req, res) => {
   try {
     const claims = await Claim.find();
-    res.json(claims);
+    res.status(201).json(claims);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -17,7 +17,8 @@ const claimSchema = new mongoose.Schema({
     medicalReport: { type: Boolean, default: false },
     appraisalReport: { type: Boolean, default: false },
   },
-  claimLocation: { type: String }
+  claimLocation: { type: String },
+  "internalTags": { type: String }
 });
 
 module.exports = mongoose.model("Claim", claimSchema);

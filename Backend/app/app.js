@@ -25,6 +25,7 @@ app.use(bodyParser.json());
 // Routes
 app.use("/api", leakageRoutes);
 app.use("/api", auditRoutes);
+app.use("/api", claimRoutes);
 
 // Starting the server
 const PORT = process.env.PORT || 5050;
