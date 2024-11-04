@@ -23,11 +23,15 @@ export default function App() {
             <Route path="/claimpage" element={<ClaimScreen/>} />
             <Route path="/browseClaim" element={<ClaimBrowse/>} />
             <Route path="/LeakageForm" element={<LeakageForm/>} />
-            <Route path="/LeakagePage" element={<LeakagePage/>} />
+
             <Route path="/auditForm" element={<AuditForm/>} />
 
-            <Route path="/claimDetail" element={<ClaimDetail/>} />
-            <Route path="/claimSubDashboard" element={<ClaimSubDashboard/>} />
+
+            <Route path="/claimDashboard/:id" element={<ClaimSubDashboard/>}>
+            <Route path="Leakage" element={<LeakagePage/>} />
+            <Route path="claim/:id" element={<ClaimDetail/>} />
+
+            </Route>
 
             
           </Routes>

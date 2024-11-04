@@ -18,10 +18,25 @@ const ClaimProgress = () => {
 
       {/* Progress Bar */}
       <div className="flex-grow flex items-center space-x-6">
-        <Step label="FNOL" completed />
-        <Step label="Appraisal" completed />
-        <Step label="Repair" current />
-        <Step label="Settlement" />
+        <section>
+        <Step label="" completed />
+        <label className="">FNOL</label>
+        </section>
+
+        <section>
+        <Step label="" completed />
+        <label>Appraisal</label>
+        </section>
+
+        <section>
+        <Step label="" current />
+        <label className="">Repair</label>
+        </section>
+
+        <section>
+        <Step label="" />
+        <label className="">Settlement</label>
+        </section>
       </div>
 
       {/* Status and Note */}

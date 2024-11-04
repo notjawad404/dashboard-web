@@ -108,7 +108,7 @@ const ClaimScreen = () => {
 
   // Navigate to Claim Subdashboard
   const navigateToClaimDashboard = (claimId) => {
-    navigate(`/claimsubdashboard/${claimId}`);
+    navigate(`/claimdashboard/${claimId}`);
   };
 
   return (
