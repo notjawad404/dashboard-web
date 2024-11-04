@@ -7,6 +7,7 @@ const connectDB = require("./config/db");
 const leakageRoutes = require("./routes/leakageRoutes");
 const auditRoutes = require("./routes/auditRoutes");
 const claimRoutes = require("./routes/claimRoutes");
+const policyRoutes = require('./routes/policyRoutes');
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use(bodyParser.json());
 app.use("/api", leakageRoutes);
 app.use("/api", auditRoutes);
 app.use("/api", claimRoutes);
+app.use("/api", policyRoutes);
 
 // Starting the server
 const PORT = process.env.PORT || 5050;
