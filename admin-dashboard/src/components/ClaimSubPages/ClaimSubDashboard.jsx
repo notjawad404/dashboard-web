@@ -16,7 +16,7 @@ export default function ClaimSubDashboard() {
             <Link to={`policy/${id}`}>Policy</Link>
           </li>
           <li className="text-gray-500 border-b-4 px-3">
-            <Link to={`customer/${id}`}>Customer</Link>
+            <Link to={`customerdetail`}>Customer</Link>
           </li>
           <li className="text-gray-500 border-b-4 px-3">
             <Link to={`appraisal/${id}`}>Appraisal</Link>

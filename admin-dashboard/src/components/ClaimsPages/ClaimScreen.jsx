@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import placeholderImg from '../../assets/Image.png';
+import DoubleRangeSlider from "./DoubleRangeSlider";
 
 const ClaimScreen = () => {
-  // Initial data and state
   const [claims, setClaims] = useState([]);
   const [filteredClaims, setFilteredClaims] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -18,7 +18,6 @@ const ClaimScreen = () => {
 
   const navigate = useNavigate();
 
-  // Fetch data from the API
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -27,7 +26,7 @@ const ClaimScreen = () => {
           throw new Error("Failed to fetch data");
         }
         const data = await response.json();
-        setClaims(data);  // Set the fetched data to the claims state
+        setClaims(data);
       } catch (error) {
         console.error("Error fetching claims:", error);
       }
@@ -35,7 +34,6 @@ const ClaimScreen = () => {
     fetchData();
   }, []);
 
-  // Apply filters, search, and sorting
   useEffect(() => {
     let result = claims.filter(claim =>
       claim.claimNo.toLowerCase().includes(searchQuery.toLowerCase())
@@ -49,7 +47,6 @@ const ClaimScreen = () => {
       );
     }
 
-    // Sort claims based on the selected filter
     if (sortDirection.active) {
       if (sortDirection.sortBy === "claimAmount-asc") {
         result.sort((a, b) => a.claimAmount - b.claimAmount);
@@ -63,10 +60,9 @@ const ClaimScreen = () => {
     setFilteredClaims(result);
   }, [claims, searchQuery, filters, sortDirection]);
 
-  // Handlers
   const handleSearchChange = (e) => setSearchQuery(e.target.value);
-  const handleFilterChange = (newFilters) => setFilters(prev => ({ ...prev, ...newFilters }));
-  
+  // const handleFilterChange = (newFilters) => setFilters(prev => ({ ...prev, ...newFilters }));
+
   const handleSortChange = (sortOption) => {
     setSortDirection(prev => {
       if (prev.sortBy === sortOption) {
@@ -76,13 +72,15 @@ const ClaimScreen = () => {
     });
   };
 
-  // Pagination logic
+  const handleSliderChange = (min, max) => {
+    setFilters((prev) => ({ ...prev, claimAmount: [min, max] }));
+  };
+
   const indexOfLastClaim = currentPage * claimsPerPage;
   const indexOfFirstClaim = indexOfLastClaim - claimsPerPage;
   const currentClaims = filteredClaims.slice(indexOfFirstClaim, indexOfLastClaim);
   const totalPages = Math.ceil(filteredClaims.length / claimsPerPage);
 
-  // Helper function to format dates
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -94,19 +92,9 @@ const ClaimScreen = () => {
     return `Updated ${diffInDays} days ago`;
   };
 
-  // Button styles
   const buttonStyle = "border border-gray-300 rounded-xl";
   const activeButtonStyle = "bg-black text-white";
 
-  const handleSliderChange = (e) => {
-    const value = parseInt(e.target.value);
-    const minAmount = Math.min(value, filters.claimAmount[1]);
-    const maxAmount = Math.max(value, filters.claimAmount[0]);
-
-    handleFilterChange({ claimAmount: [minAmount, maxAmount] });
-  };
-
-  // Navigate to Claim Subdashboard
   const navigateToClaimDashboard = (claimId) => {
     navigate(`/claimdashboard/${claimId}`);
   };
@@ -117,6 +105,7 @@ const ClaimScreen = () => {
       <div className="w-40 p-4 border-r">
         <h2 className="text-lg font-bold mb-2">Filters</h2>
         <div className="py-2">
+          {/* Risk Filters */}
           <section className="flex flex-row py-1">
             <input type="checkbox" className="mr-2" />
             <section className="flex flex-col">
@@ -139,27 +128,19 @@ const ClaimScreen = () => {
             </section>
           </section>
         </div>
+
+        {/* Double Range Slider */}
         <div>
           <label className="block mb-2 font-semibold">Claim Evaluation</label>
-          <input
-            type="range"
-            min="0"
-            max="50000"
-            value={filters.claimAmount[0]}
-            onChange={handleSliderChange}
-            className="range"
-          />
-          <input
-            type="range"
-            min="0"
-            max="50000"
-            value={filters.claimAmount[1]}
-            onChange={handleSliderChange}
-            className="range mt-2"
-          />
-          <div className="text-sm text-gray-600">
-            Range: ${filters.claimAmount[0]} - ${filters.claimAmount[1]}
-          </div>
+          <DoubleRangeSlider
+          initialMinValue={filters.claimAmount[0]}
+          initialMaxValue={filters.claimAmount[1]}
+          onMinChange={(min) => handleSliderChange(min, filters.claimAmount[1])}
+          onMaxChange={(max) => handleSliderChange(filters.claimAmount[0], max)}
+        />
+        <div className="text-sm text-gray-600 mt-5">
+          Range: ${filters.claimAmount[0]} - ${filters.claimAmount[1]}
+        </div>
         </div>
       </div>
 
@@ -200,7 +181,7 @@ const ClaimScreen = () => {
         </div>
 
         {/* Claims Grid */}
-        <div className="grid grid-cols-6 gap-2">
+        <div className="grid grid-cols-6 gap-4">
           {currentClaims.length > 0 ? (
             currentClaims.map((claim) => (
               <div 
@@ -208,8 +189,8 @@ const ClaimScreen = () => {
                 className="my-1 cursor-pointer" 
                 onClick={() => navigateToClaimDashboard(claim._id)}
               >
-                <img src={placeholderImg} alt="" className="w-full h-20" />
-                <h3 className=" text-sm font-bold">{claim.claimNo}</h3>
+                <img src={placeholderImg} alt="" className="w-full h-20 object-cover" />
+                <h3 className="text-sm font-bold">{claim.claimNo}</h3>
                 <p className="text-xs text-gray-600">{formatDate(claim.claimDate)}</p>
               </div>
             ))

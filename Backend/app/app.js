@@ -8,6 +8,7 @@ const leakageRoutes = require("./routes/leakageRoutes");
 const auditRoutes = require("./routes/auditRoutes");
 const claimRoutes = require("./routes/claimRoutes");
 const policyRoutes = require('./routes/policyRoutes');
+const customerRoutes = require("./routes/customerRoutes");
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use("/api", leakageRoutes);
 app.use("/api", auditRoutes);
 app.use("/api", claimRoutes);
 app.use("/api", policyRoutes);
+app.use("/api", customerRoutes);
 
 // Starting the server
 const PORT = process.env.PORT || 5050;
