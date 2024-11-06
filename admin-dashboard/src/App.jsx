@@ -14,6 +14,7 @@ import AppraisalDetails from "./components/ClaimSubPages/AppraisalDetail";
 import LeakageDashboard from "./components/LeakagesPages/LeakageDashboard";
 import LeakageBrowse from "./components/LeakagesPages/LeakageBrowse";
 import PDFParser from "./components/MarketEvaluation/PDFParser";
+import CustomerDebt from "./components/MarketEvaluation/CustomerDebt";
 
 export default function App() {
   return (
@@ -44,6 +45,7 @@ export default function App() {
             <Route path="/leakagebrowse" element={<LeakageBrowse/>} />
             
             <Route path="/pdfparser" element={<PDFParser/>} />
+            <Route path="/customerdebt" element={<CustomerDebt/>}/>
           </Routes>
         </div>
       </div>
