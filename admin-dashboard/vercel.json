@@ -1,0 +1,21 @@
+{
+    "version": 1,
+    "builds" : [
+        {
+            "src": "*.jsx",
+            "use": "@vercel/node"
+        }
+    ],
+    "routes" : [
+        {
+            "src": "/(.*)",
+            "dest": "/"
+        }
+    ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
+}
