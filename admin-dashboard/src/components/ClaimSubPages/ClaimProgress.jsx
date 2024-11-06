@@ -17,27 +17,27 @@ const ClaimProgress = () => {
       </div>
 
       {/* Progress Bar */}
-      <div className="flex-grow flex items-center space-x-6">
-        <section>
+      <div className="flex-grow flex items-center space-x-2 px-40">
+      <section className="flex flex-col items-center">
         <Step label="" completed />
         <label className="">FNOL</label>
-        </section>
-
-        <section>
+      </section>
+      <HorizontalLine />
+      <section className="flex flex-col items-center">
         <Step label="" completed />
         <label>Appraisal</label>
-        </section>
-
-        <section>
+      </section>
+      <HorizontalLine />
+      <section className="flex flex-col items-center">
         <Step label="" current />
         <label className="">Repair</label>
-        </section>
-
-        <section>
+      </section>
+      <HorizontalLine />
+      <section className="flex flex-col items-center">
         <Step label="" />
         <label className="">Settlement</label>
-        </section>
-      </div>
+      </section>
+    </div>
 
       {/* Status and Note */}
       <div className="space-y-2 text-right">
@@ -114,6 +114,11 @@ const Step = ({ label, completed, current }) => (
     </div>
     <p className="text-gray-600">{label}</p>
   </div>
+);
+
+// Horizontal line component
+const HorizontalLine = () => (
+  <div className="w-12 h-0.5 bg-gray-300"></div>
 );
 
 // PropTypes validation

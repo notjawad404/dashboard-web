@@ -1,4 +1,3 @@
-import React from 'react'
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaBell } from "react-icons/fa";
 import NavbarDropdown from './NavbarDropdown';

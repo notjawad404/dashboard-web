@@ -8,6 +8,7 @@ const leakageSchema = new mongoose.Schema({
   observations: { type: String },
   urgency: { type: String, enum: ["low", "medium", "high"], required: true },
   status: { type: String, enum: ["pending", "confirm", "rejected"], required: true },
+  date: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model("Leakage", leakageSchema);

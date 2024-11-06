@@ -1,8 +1,18 @@
-import { Link, Outlet, useParams } from "react-router-dom";
+import { Link, Outlet, useParams, useNavigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import ClaimProgress from "./ClaimProgress";
 
 export default function ClaimSubDashboard() {
   const { id } = useParams(); // Access the id from route parameters
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Automatically navigate to the "Claim" section on component mount, only if not already on a subpage
+  useEffect(() => {
+    if (id && location.pathname === `/claimdashboard/${id}`) {
+      navigate(`claim/${id}`);
+    }
+  }, [id, navigate, location.pathname]);
 
   return (
     <>
