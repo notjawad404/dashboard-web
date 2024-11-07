@@ -189,7 +189,7 @@ const ClaimScreen = () => {
                 className="my-1 cursor-pointer" 
                 onClick={() => navigateToClaimDashboard(claim._id)}
               >
-                <img src={placeholderImg} alt="" className="w-full h-20 object-cover" />
+                <img src={placeholderImg} alt="" className="w-full h-32 object-cover" />
                 <h3 className="text-sm font-bold">{claim.claimNo}</h3>
                 <p className="text-xs text-gray-600">{formatDate(claim.claimDate)}</p>
               </div>
