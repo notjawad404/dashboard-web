@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import { BiCar } from 'react-icons/bi';
+// import { BiCar } from 'react-icons/bi';
 
 const MarketEvaluation = () => {
     const [cars, setCars] = useState([]);
     const [stats, setStats] = useState(null);
-
     const [featuredCarImage, setFeaturedCarImage] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -25,7 +24,12 @@ const MarketEvaluation = () => {
     const [selectedFuelType, setSelectedFuelType] = useState('');
 
     useEffect(() => {
-        fetch('/marketEvaluation.json')
+        if (!selectedBrand || !selectedModel || !selectedYear || !selectedFuelType) return;
+
+        const url = `https://standvirtual-api.onrender.com/scrape-cars/?brand=${selectedBrand}&model=${selectedModel}&year=${selectedYear}&fuel=${selectedFuelType}&pages=1`;
+
+        setLoading(true);
+        fetch(url, { method: 'POST' })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -48,10 +52,9 @@ const MarketEvaluation = () => {
             .finally(() => {
                 setLoading(false);
             });
-    }, []);
+    }, [selectedBrand, selectedModel, selectedYear, selectedFuelType]);
 
     useEffect(() => {
-        // Reset model when brand changes
         setSelectedModel('');
     }, [selectedBrand]);
 
@@ -116,95 +119,67 @@ const MarketEvaluation = () => {
                     ))}
                 </select>
             </div>
-            
 
             <div className='flex flex-row'>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 w-3/4">
-            {cars.map((car, index) => (
-                <div key={index} className="bg-white shadow-md rounded-lg overflow-hidden">
-                    <img
-                        src={car.Image}
-                        alt={car.Brand}
-                        className="h-48 w-full object-cover"
-                    />
-                    <div className="p-4">
-                        <h3 className="text-lg font-semibold">{car.Brand}</h3>
-                        <p> ${car.Price.toLocaleString()}</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 w-3/4">
+                    {cars.map((car, index) => (
+                        <div key={index} className="bg-white shadow-md rounded-lg overflow-hidden">
+                            <img
+                                src={car.Image}
+                                alt={car.Brand}
+                                className="h-48 w-full object-cover"
+                            />
+                            <div className="p-4">
+                                <h3 className="text-lg font-semibold">{car.Brand}</h3>
+                                <p> ${car.Price.toLocaleString()}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className='w-1/4 flex flex-col'>
+                    {stats && (
+                        <div className=" p-6 mb-8 flex flex-col">
+                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Brand</span><br/> Audi</p>
+                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Model</span><br/> TDI 3.0</p>
+                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Year</span><br/> 2017</p>
+                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Condition</span><br/> Used</p>
+                        </div>
+                    )}
+                    {featuredCarImage && (
+                        <div className="flex justify-center items-center">
+                            <img
+                                src={featuredCarImage}
+                                alt="Featured Car"
+                                className="w-40 h-40 mx-auto rounded-lg shadow-lg"
+                            />
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Findings section */}
+            <div className="p-6 rounded-lg shadow-md">
+                <h2 className="text-xl font-semibold ">Findings:</h2>
+                <div className="text-gray-800">
+                    <div>
+                        <h3>Price Range: $10,000 - $18,000</h3>
+                        <ul className="list-disc ml-6">
+                            <li>Older Models (2016-2018): $10,000 - $12,000</li>
+                            <li>Mid-Range Models (2019-2021): $13,000 - $15,000</li>
+                            <li>Newer Models (2022-2023): $16,000 - $18,000, with higher trims and low mileage</li>
+                        </ul>
                     </div>
+                    <div>
+                        <h3>Key Factors Affecting Price:</h3>
+                        <ul className="list-disc ml-6">
+                            <li>Mileage: Over 100,000 km reduces value by ~20-30%</li>
+                            <li>Trim Level: Higher trims add 10-15% over base models</li>
+                        </ul>
+                    </div>
+                    <p>Recommended Market Price: For a well-maintained Clio with mid-range features and mileage under 60,000 km, $13,000 - $15,000.</p>
                 </div>
-            ))}
-        </div>
-            <div className='w-1/4 flex flex-col'>
-            <div className='flex flex-row'>
-            {stats && (
-                <div className=" p-6 mb-8 flex flex-col">
-                    <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Brand</span><br></br>  Audi</p>
-                                        <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Model</span><br></br>  TDI 3.0</p>
-                                        <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Year</span><br></br> 2017</p>
-                                        <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Condition</span><br></br>  Used</p>
-                </div>
-            )}
-            {featuredCarImage && (
-                <div className="flex justify-center items-center">
-                    <img
-                        src={featuredCarImage}
-                        alt="Featured Car"
-                        className="w-40 h-40 mx-auto rounded-lg shadow-lg"
-                    />
-                </div>
-            )}
             </div>
-
-
-
-            <div className="p-4 flex items-center justify-between">
-      {/* Left Price */}
-      <span className="">$26,647</span>
-
-      {/* Slider Line and Icon */}
-      <div className="relative flex-1 mx-4">
-        <div className="h-0.5 bg-purple-200 absolute inset-0 top-1/2 transform -translate-y-1/2"></div>
-        <div className="flex items-center justify-center relative">
-          <BiCar className="text-gray-700 text-xl bg-white p-1 rounded-full shadow-md" />
-        </div>
-        <div className="absolute top-full text-center w-full mt-2 ">$29,647</div>
-      </div>
-
-      {/* Right Price */}
-      <span className="">$36,647</span>
-    </div>
-            </div>
-            </div>
-
-            <div className=" p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold ">Findings:</h2>
-
-      <div className="text-gray-800">
-        <div className="">
-          <h3 className="">Price Range: $10,000 - $18,000</h3>
-          <ul className="list-disc ml-6">
-            <li><span>Older Models (2016-2018):</span> $10,000 - $12,000</li>
-            <li><span>Mid-Range Models (2019-2021):</span> $13,000 - $15,000</li>
-            <li><span>Newer Models (2022-2023):</span> $16,000 - $18,000, with higher trims and low mileage</li>
-          </ul>
-        </div>
-
-        <div className="">
-          <h3 className="">Key Factors Affecting Price:</h3>
-          <ul className="list-disc ml-6">
-            <li><span>Mileage:</span> Over 100,000 km reduces value by ~20-30%</li>
-            <li><span>Trim Level:</span> Higher trims add 10-15% over base models</li>
-          </ul>
-        </div>
-
-        <div>
-          <p className="">
-            Recommended Market Price:
-            <span className="font-normal"> For a well-maintained Clio with mid-range features and mileage under 60,000 km, $13,000 - $15,000.</span>
-          </p>
-        </div>
-      </div>
-    </div>
         </div>
     );
 };
