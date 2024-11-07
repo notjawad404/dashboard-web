@@ -39,7 +39,9 @@ export default function App() {
             <Route path="policy/:id" element={<ClaimPolicy/>} />
             <Route path="customerdetail" element={<CustomerDetail/>} />
             <Route path="appraisal/:id" element={<AppraisalDetails/>}/>
-
+            <Route path="litigation/:id" element={<h1>Page not found</h1>} />
+            <Route path="fraud/:id" element={<h1>Page not found</h1>} />
+            <Route path="network/:id" element={<h1>Page not found</h1>} />
             </Route>    
             
             <Route path="/leakagedashboard" element={<LeakageDashboard/>} />

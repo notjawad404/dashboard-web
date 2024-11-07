@@ -59,7 +59,7 @@ export default function Sidebar1() {
                         Claim
                     </button>
                     {isClaimOpen && (
-                        <div className="absolute z-10 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                        <div className="absolute z-10 left-10 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                             <div className="py-1">
                                 <button
                                     onClick={() => handleSelect('claim-Dashboard')}
@@ -129,7 +129,7 @@ export default function Sidebar1() {
                         Leakage
                     </button>
                     {isLeakageOpen && (
-                        <div className="absolute z-10 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                        <div className="absolute z-10 left-10 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                             <div className="py-1">
                                 <button
                                     onClick={() => handleLeakageSelect('leakage-Dashboard')}
