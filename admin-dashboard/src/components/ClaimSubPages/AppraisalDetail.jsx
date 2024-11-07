@@ -10,7 +10,7 @@ const AppraisalDetails = () => {
   useEffect(() => {
     const fetchAppraisal = async () => {
       try {
-        const response = await axios.get(`http://localhost:5050/api/appraisal/${id}`);
+        const response = await axios.get(`https://dasbboard-backend.vercel.app/api/appraisal/appraisal/${id}`);
         setAppraisal(response.data);
       } catch (error) {
         console.error("Error fetching appraisal:", error);

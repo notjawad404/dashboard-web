@@ -44,10 +44,12 @@ export default function App() {
             
             <Route path="/leakagedashboard" element={<LeakageDashboard/>} />
             <Route path="/leakagebrowse" element={<LeakageBrowse/>} />
+            <Route path="/leakagepage" element={<LeakagePage/>} />
             
             <Route path="/pdfparser" element={<PDFParser/>} />
             <Route path="/customerdebt" element={<CustomerDebt/>}/>
             <Route path="/marketevaluation" element={<MarketEvaluation/>}/>
+            <Route path="*" element={<h1>Page not found</h1>} />
           </Routes>
         </div>
       </div>

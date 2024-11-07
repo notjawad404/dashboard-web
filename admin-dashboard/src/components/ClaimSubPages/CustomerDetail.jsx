@@ -9,7 +9,7 @@ const CustomerDetail = () => {
   useEffect(() => {
     const fetchCustomerData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5051/api/customer/${customerId}`);
+        const response = await axios.get(`https://dasbboard-backend.vercel.app/api/customer/customer/${customerId}`);
         setCustomer(response.data);
         console.log(response.data);
       } catch (error) {

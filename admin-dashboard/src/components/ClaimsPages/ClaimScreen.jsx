@@ -21,7 +21,7 @@ const ClaimScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:5051/api/claims");
+        const response = await fetch("https://dasbboard-backend.vercel.app/api/claim/claims");
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }

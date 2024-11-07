@@ -1,21 +1,21 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-import { useNavigate, useSearchParams  } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 const AuditForm = () => {
-  const [leakageId, setLeakageId] = useState("");
   const [auditorId, setAuditorId] = useState("");
   const [pendingSavings, setPendingSavings] = useState("");
   const [actualSavings, setActualSavings] = useState("");
   const [note, setNote] = useState("");
-
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const [searchParams] = useSearchParams();
-  const LeakageId = searchParams.get('leakageId');
+  const LeakageId = searchParams.get('leakageId'); // Using this directly
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
+  
     const auditData = {
       leakageId: LeakageId,
       auditorId,
@@ -23,42 +23,39 @@ const AuditForm = () => {
       actualSavings: parseFloat(actualSavings),
       note,
     };
-
-
+  
     try {
-      const response = await axios.post("http://localhost:5050/api/audit", auditData, {
+      // Submit the audit data
+      const response = await axios.post("https://dasbboard-backend.vercel.app/api/audit/audit", auditData, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-
+  
       console.log(response.data);
-      // After the audit data is successfully submitted, update the leakage status
-    const leakageUpdateResponse = await axios.put(`http://localhost:5050/api/leakages/${LeakageId}`, {
-      status: "confirmed"
-    });
-
-    console.log(leakageUpdateResponse.data);
-
+  
       // Clear form fields after successful submission
-      setLeakageId("");
       setAuditorId("");
       setPendingSavings("");
       setActualSavings("");
       setNote("");
-
-      alert("Leakage record added successfully!");
-      // Navigate to the LeakagePage on successful form submission
-      navigate("/leakagepage");
+  
+      alert("Audit record added successfully!");
+      // Redirect to the previous page
+      window.history.back();
+  
     } catch (error) {
-      alert("Failed to create audit record");
       console.error("Error creating audit record:", error);
+      alert("Failed to create audit record.");
+    } finally {
+      setLoading(false);
     }
   };
+  
+  
 
   return (
     <form onSubmit={handleSubmit} className="w-full md:w-1/2 mx-auto mt-4 p-4 bg-white shadow-md rounded-lg space-y-4">
-
       <div className="space-y-1">
         <label className="block text-gray-700">Auditor ID:</label>
         <input
@@ -105,11 +102,11 @@ const AuditForm = () => {
 
       <button 
         type="submit" 
-        className="w-full bg-black text-white py-2 rounded-md shadow-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        disabled={loading}
+        className={`w-full ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-black hover:bg-gray-800"} text-white py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
       >
-        Submit
+        {loading ? "Submitting..." : "Submit"}
       </button>
-
     </form>
   );
 };

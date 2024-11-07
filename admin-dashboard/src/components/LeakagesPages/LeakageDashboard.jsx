@@ -21,7 +21,7 @@ const LeakageDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:5051/api/leakages");
+        const response = await fetch("https://dasbboard-backend.vercel.app/api/leakage/leakages");
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 
 export default function LeakageForm() {
@@ -16,11 +15,6 @@ export default function LeakageForm() {
 
   const navigate = useNavigate();
 
-  // Set UUID for leakageId on component mount
-  useEffect(() => {
-    setFormData((prevData) => ({ ...prevData, leakageId: uuidv4() }));
-  }, []);
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -28,11 +22,11 @@ export default function LeakageForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      //Fetch data from API
-      await axios.post("http://localhost:5050/api/leakage", formData);
+      // Fetch data from API
+      await axios.post("https://dasbboard-backend.vercel.app/api/leakage/leakages", formData);
       alert("Leakage record added successfully!");
-      // Navigate to the LeakagePage on successful form submission
-      navigate("/LeakagePage");
+      // Navigate to the previous page on successful form submission
+      navigate(-1); // Goes back to the previous page
     } catch (error) {
       console.error("Error adding leakage record", error);
       alert("Failed to add leakage record");
@@ -42,6 +36,19 @@ export default function LeakageForm() {
   return (
     <form onSubmit={handleSubmit} className="w-full md:w-1/2 mx-auto p-4 bg-white shadow-md rounded-lg space-y-4">
       
+      {/* Leakage ID field (user can manually input) */}
+      <label className="block">
+        <span className="text-gray-700">Leakage ID</span>
+        <input 
+          type="text" 
+          name="leakageId" 
+          value={formData.leakageId} 
+          onChange={handleChange} 
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+          required
+        />
+      </label>
+
       <label className="block">
         <span className="text-gray-700">Leakage Type</span>
         <select 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -14,11 +14,11 @@ const LeakagePage = () => {
   useEffect(() => {
     const fetchLeakages = async () => {
       try {
-        const response = await axios.get("http://localhost:5050/api/leakages");
+        const response = await axios.get("https://dasbboard-backend.vercel.app/api/leakage/leakages");
         setLeakages(response.data);
         console.log(response.data);
       } catch (err) {
-        setError("Failed to fetch leakage records");
+        setError("Failed to fetch leakage records", err);
       } finally {
         setLoading(false);
       }
