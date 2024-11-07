@@ -24,9 +24,8 @@ const MarketEvaluation = () => {
     const [selectedFuelType, setSelectedFuelType] = useState('');
 
     useEffect(() => {
-        if (!selectedBrand || !selectedModel || !selectedYear || !selectedFuelType) return;
 
-        const url = `https://standvirtual-api.onrender.com/scrape-cars/?brand=${selectedBrand}&model=${selectedModel}&year=${selectedYear}&fuel=${selectedFuelType}&pages=1`;
+        const url = 'https://standvirtual-api.onrender.com/scrape-cars/?brand=audi&model=a3-sportback&year=2022&fuel=gasoline&pages=1';
 
         setLoading(true);
         fetch(url, { method: 'POST' })
