@@ -1,13 +1,21 @@
-import { useEffect, useState } from 'react';
-// import { BiCar } from 'react-icons/bi';
+import { useEffect, useState, useMemo } from 'react';
 
 const MarketEvaluation = () => {
     const [cars, setCars] = useState([]);
     const [stats, setStats] = useState(null);
+    const [report, setReport] = useState('');
     const [featuredCarImage, setFeaturedCarImage] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [initialFetchFailed, setInitialFetchFailed] = useState(false);
 
+    // Dropdown selections
+    const [brand, setBrand] = useState('');
+    const [model, setModel] = useState('');
+    const [year, setYear] = useState('');
+    const [fuel, setFuel] = useState('');
+
+    // Default options
     const brands = ["Toyota", "Honda", "Ford", "Chevrolet"];
     const models = {
         Toyota: ["Corolla", "Camry", "RAV4"],
@@ -16,18 +24,25 @@ const MarketEvaluation = () => {
         Chevrolet: ["Silverado", "Malibu", "Equinox"]
     };
     const fuelTypes = ["gasoline", "diesel", "electric", "hybrid"];
-    const years = Array.from({ length: 2024 - 1950 + 1 }, (_, i) => (1950 + i).toString());
+    const years = useMemo(() => Array.from({ length: 2024 - 1950 + 1 }, (_, i) => (1950 + i).toString()), []);
 
-    const [selectedBrand, setSelectedBrand] = useState('');
-    const [selectedModel, setSelectedModel] = useState('');
-    const [selectedYear, setSelectedYear] = useState('');
-    const [selectedFuelType, setSelectedFuelType] = useState('');
-
+    // Initial fetch with default parameters
     useEffect(() => {
+        fetchData('audi', 'a3-sportback', '2022', 'gasoline');
+    }, []);
 
-        const url = 'https://standvirtual-api.onrender.com/scrape-cars/?brand=audi&model=a3-sportback&year=2022&fuel=gasoline&pages=1';
+    // Fetch data whenever all selections are made
+    useEffect(() => {
+        if (brand && model && year && fuel) {
+            fetchData(brand, model, year, fuel);
+        }
+    }, [brand, model, year, fuel]);
 
+    const fetchData = (brand, model, year, fuel) => {
         setLoading(true);
+        setError(null); // Clear previous errors
+        const url = `https://standvirtual-api.onrender.com/scrape-cars/?brand=${brand}&model=${model}&year=${year}&fuel=${fuel}&pages=1`;
+
         fetch(url, { method: 'POST' })
             .then(response => {
                 if (!response.ok) {
@@ -43,106 +58,95 @@ const MarketEvaluation = () => {
                 if (data.stats) {
                     setStats(data.stats);
                 }
+                if (data.report) {
+                    setReport(data.report);
+                }
+                setInitialFetchFailed(false);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
-                setError('Failed to fetch data');
+                setError('Failed to fetch data. Please try again.');
+                setInitialFetchFailed(true);
             })
             .finally(() => {
                 setLoading(false);
             });
-    }, [selectedBrand, selectedModel, selectedYear, selectedFuelType]);
-
-    useEffect(() => {
-        setSelectedModel('');
-    }, [selectedBrand]);
+    };
 
     if (loading) {
         return <p>Loading...</p>;
     }
 
-    if (error) {
+    if (error && !initialFetchFailed) {
         return <p>{error}</p>;
     }
 
     return (
         <div className="p-8">
-            <div className="flex space-x-10 mb-8">
-                <select
-                    value={selectedBrand}
-                    onChange={(e) => setSelectedBrand(e.target.value)}
-                    className="border rounded p-2 px-10 "
-                >
+            {/* Dropdown menus for selections */}
+            <div className="flex gap-4 mb-8">
+                <select value={brand} onChange={(e) => setBrand(e.target.value)} className="p-2 border rounded">
                     <option value="">Select Brand</option>
-                    {brands.map((brand) => (
-                        <option key={brand} value={brand}>
-                            {brand}
-                        </option>
+                    {brands.map((b) => (
+                        <option key={b} value={b}>{b}</option>
                     ))}
                 </select>
+
                 <select
-                    value={selectedModel}
-                    onChange={(e) => setSelectedModel(e.target.value)}
-                    className="border rounded p-2 px-10 "
-                    disabled={!selectedBrand}
+                    value={model}
+                    onChange={(e) => setModel(e.target.value)}
+                    className="p-2 border rounded"
+                    disabled={!brand}
                 >
                     <option value="">Select Model</option>
-                    {selectedBrand && models[selectedBrand].map((model) => (
-                        <option key={model} value={model}>
-                            {model}
-                        </option>
+                    {brand && models[brand].map((m) => (
+                        <option key={m} value={m}>{m}</option>
                     ))}
                 </select>
-                <select
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(e.target.value)}
-                    className="border rounded p-2 px-10 "
-                >
+
+                <select value={year} onChange={(e) => setYear(e.target.value)} className="p-2 border rounded">
                     <option value="">Select Year</option>
-                    {years.map((year) => (
-                        <option key={year} value={year}>
-                            {year}
-                        </option>
+                    {years.map((y) => (
+                        <option key={y} value={y}>{y}</option>
                     ))}
                 </select>
-                <select
-                    value={selectedFuelType}
-                    onChange={(e) => setSelectedFuelType(e.target.value)}
-                    className="border rounded p-2 px-10 "
-                >
-                    <option value="">Select Fuel Type</option>
-                    {fuelTypes.map((fuelType) => (
-                        <option key={fuelType} value={fuelType}>
-                            {fuelType}
-                        </option>
+
+                <select value={fuel} onChange={(e) => setFuel(e.target.value)} className="p-2 border rounded">
+                    <option value="">Select Fuel</option>
+                    {fuelTypes.map((f) => (
+                        <option key={f} value={f}>{f}</option>
                     ))}
                 </select>
             </div>
 
             <div className='flex flex-row'>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 w-3/4">
-                    {cars.map((car, index) => (
-                        <div key={index} className="bg-white shadow-md rounded-lg overflow-hidden">
-                            <img
-                                src={car.Image}
-                                alt={car.Brand}
-                                className="h-48 w-full object-cover"
-                            />
-                            <div className="p-4">
-                                <h3 className="text-lg font-semibold">{car.Brand}</h3>
-                                <p> ${car.Price.toLocaleString()}</p>
+                {cars.length === 0 && !loading ? (
+                    <p>No cars available for the selected options.</p>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 w-3/4">
+                        {cars.map((car, index) => (
+                            <div key={index} className="bg-white shadow-md rounded-lg overflow-hidden">
+                                <img
+                                    src={car.Image}
+                                    alt={car.Brand}
+                                    className="h-48 w-full object-cover"
+                                />
+                                <div className="p-4">
+                                    <h3 className="text-lg font-semibold">{car.Brand}</h3>
+                                    <p> ${car.Price.toLocaleString()}</p>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
 
                 <div className='w-1/4 flex flex-col'>
                     {stats && (
-                        <div className=" p-6 mb-8 flex flex-col">
-                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Brand</span><br/> Audi</p>
-                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Model</span><br/> TDI 3.0</p>
-                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Year</span><br/> 2017</p>
-                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Condition</span><br/> Used</p>
+                        <div className="p-6 mb-8 flex flex-col">
+                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Brand</span><br/> {stats.brand}</p>
+                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Model</span><br/> {stats.model}</p>
+                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Year</span><br/> {stats.year}</p>
+                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Condition</span><br/> {stats.condition}</p>
                         </div>
                     )}
                     {featuredCarImage && (
@@ -176,7 +180,7 @@ const MarketEvaluation = () => {
                             <li>Trim Level: Higher trims add 10-15% over base models</li>
                         </ul>
                     </div>
-                    <p>Recommended Market Price: For a well-maintained Clio with mid-range features and mileage under 60,000 km, $13,000 - $15,000.</p>
+                    <p>Recommended Market Price: For a well-maintained car with mid-range features and mileage under 60,000 km, $13,000 - $15,000.</p>
                 </div>
             </div>
         </div>
