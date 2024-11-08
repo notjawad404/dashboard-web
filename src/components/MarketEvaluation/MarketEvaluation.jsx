@@ -66,7 +66,7 @@ const MarketEvaluation = () => {
                     setLoading(false);
                 });
         }
-    }, [searchInitiated, brand, model, year, fuel]);
+    }, [searchInitiated]);
 
     const handleSearch = () => {
         if (brand && model && year && fuel) {
