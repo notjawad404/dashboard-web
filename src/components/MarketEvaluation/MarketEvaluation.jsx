@@ -6,15 +6,19 @@ const MarketEvaluation = () => {
     const [featuredCarImage, setFeaturedCarImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [searchPerformed, setSearchPerformed] = useState(false);
 
-    // Dropdown selections
-    const [brand, setBrand] = useState('');
-    const [model, setModel] = useState('');
-    const [year, setYear] = useState('');
-    const [fuel, setFuel] = useState('');
+    // Dropdown selections for input values
+    const [selectedBrand, setSelectedBrand] = useState('');
+    const [selectedModel, setSelectedModel] = useState('');
+    const [selectedYear, setSelectedYear] = useState('');
+    const [selectedFuel, setSelectedFuel] = useState('');
 
-    // Default options
+    // Search parameters that trigger the search
+    const [searchBrand, setSearchBrand] = useState('');
+    const [searchModel, setSearchModel] = useState('');
+    const [searchYear, setSearchYear] = useState('');
+    const [searchFuel, setSearchFuel] = useState('');
+
     const brands = ["Toyota", "Honda", "Ford", "Chevrolet"];
     const models = {
         Toyota: ["Corolla", "Camry", "RAV4"],
@@ -26,10 +30,10 @@ const MarketEvaluation = () => {
     const years = useMemo(() => Array.from({ length: 2024 - 1950 + 1 }, (_, i) => (1950 + i).toString()), []);
 
     useEffect(() => {
-        if (searchPerformed) {
+        if (searchBrand && searchModel && searchYear && searchFuel) {
             setLoading(true);
             setError(null);
-            const url = `https://standvirtual-api.onrender.com/scrape-cars/?brand=${brand}&model=${model}&year=${year}&fuel=${fuel}&pages=1`;
+            const url = `https://standvirtual-api.onrender.com/scrape-cars/?brand=${searchBrand}&model=${searchModel}&year=${searchYear}&fuel=${searchFuel}&pages=1`;
 
             fetch(url, { method: 'POST' })
                 .then(response => {
@@ -45,10 +49,10 @@ const MarketEvaluation = () => {
                     }
                     if (data.stats) {
                         setStats({
-                            brand,
-                            model,
-                            year,
-                            fuel,
+                            brand: searchBrand,
+                            model: searchModel,
+                            year: searchYear,
+                            fuel: searchFuel,
                             ...data.stats
                         });
                     }
@@ -61,19 +65,21 @@ const MarketEvaluation = () => {
                     setLoading(false);
                 });
         }
-    }, [brand, model, year, fuel, searchPerformed]);
+    }, [searchBrand, searchModel, searchYear, searchFuel]);
 
     const handleSearch = () => {
-        if (brand && model && year && fuel) {
-            setSearchPerformed(true);
-        }
+        // Set the search parameters to the selected values to trigger the search
+        setSearchBrand(selectedBrand);
+        setSearchModel(selectedModel);
+        setSearchYear(selectedYear);
+        setSearchFuel(selectedFuel);
     };
 
     return (
         <div className="p-8">
             {/* Dropdown menus for selections */}
             <div className="flex gap-4 mb-8">
-                <select value={brand} onChange={(e) => setBrand(e.target.value)} className="p-2 border rounded">
+                <select value={selectedBrand} onChange={(e) => setSelectedBrand(e.target.value)} className="p-2 border rounded">
                     <option value="">Select Brand</option>
                     {brands.map((b) => (
                         <option key={b} value={b}>{b}</option>
@@ -81,25 +87,25 @@ const MarketEvaluation = () => {
                 </select>
 
                 <select
-                    value={model}
-                    onChange={(e) => setModel(e.target.value)}
+                    value={selectedModel}
+                    onChange={(e) => setSelectedModel(e.target.value)}
                     className="p-2 border rounded"
-                    disabled={!brand}
+                    disabled={!selectedBrand}
                 >
                     <option value="">Select Model</option>
-                    {brand && models[brand].map((m) => (
+                    {selectedBrand && models[selectedBrand].map((m) => (
                         <option key={m} value={m}>{m}</option>
                     ))}
                 </select>
 
-                <select value={year} onChange={(e) => setYear(e.target.value)} className="p-2 border rounded">
+                <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} className="p-2 border rounded">
                     <option value="">Select Year</option>
                     {years.map((y) => (
                         <option key={y} value={y}>{y}</option>
                     ))}
                 </select>
 
-                <select value={fuel} onChange={(e) => setFuel(e.target.value)} className="p-2 border rounded">
+                <select value={selectedFuel} onChange={(e) => setSelectedFuel(e.target.value)} className="p-2 border rounded">
                     <option value="">Select Fuel</option>
                     {fuelTypes.map((f) => (
                         <option key={f} value={f}>{f}</option>
@@ -110,16 +116,16 @@ const MarketEvaluation = () => {
                 <button
                     onClick={handleSearch}
                     className="bg-gray-500 text-white px-4 py-2 rounded"
-                    disabled={!brand || !model || !year || !fuel}
+                    disabled={!selectedBrand || !selectedModel || !selectedYear || !selectedFuel}
                 >
                     Search
                 </button>
             </div>
 
-            {/* Display loading, error or results */}
+            {/* Display loading, error, or results */}
             {loading && <p>Loading...</p>}
             {error && <p>{error}</p>}
-            {!loading && !error && searchPerformed && (
+            {!loading && !error && (
                 <div>
                     {/* Car Cards */}
                     <div className="flex flex-row">
