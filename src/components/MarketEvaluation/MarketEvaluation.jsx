@@ -56,7 +56,14 @@ const MarketEvaluation = () => {
                     setFeaturedCarImage(data.cars[0]?.Image);
                 }
                 if (data.stats) {
-                    setStats(data.stats);
+                    // Set stats with API data and selected dropdown values
+                    setStats({
+                        brand,
+                        model,
+                        year,
+                        fuel,
+                        ...data.stats
+                    });
                 }
                 if (data.report) {
                     setReport(data.report);
@@ -140,12 +147,13 @@ const MarketEvaluation = () => {
                     </div>
                 )}
 
-                <div className='w-1/4 flex flex-col'>
+                <div className='w-1/4 flex flex-row'>
                     {stats && (
                         <div className="p-6 mb-8 flex flex-col">
                             <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Brand</span><br/> {stats.brand}</p>
                             <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Model</span><br/> {stats.model}</p>
                             <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Year</span><br/> {stats.year}</p>
+                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Fuel</span><br/> {stats.fuel}</p>
                             <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Condition</span><br/> {stats.condition}</p>
                         </div>
                     )}
