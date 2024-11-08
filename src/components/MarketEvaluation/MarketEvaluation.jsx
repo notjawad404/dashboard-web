@@ -3,7 +3,7 @@ import { useEffect, useState, useMemo } from 'react';
 const MarketEvaluation = () => {
     const [cars, setCars] = useState([]);
     const [stats, setStats] = useState(null);
-    const [report, setReport] = useState('');
+    // const [report, setReport] = useState('');
     const [featuredCarImage, setFeaturedCarImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -43,7 +43,7 @@ const MarketEvaluation = () => {
                 .then(data => {
                     if (data.cars) {
                         setCars(data.cars.slice(0, 3));
-                        setFeaturedCarImage(data.cars[0]?.Image);
+                        setFeaturedCarImage(data.cars[1]?.Image);
                     }
                     if (data.stats) {
                         setStats({
@@ -54,9 +54,9 @@ const MarketEvaluation = () => {
                             ...data.stats
                         });
                     }
-                    if (data.report) {
-                        setReport(data.report);
-                    }
+                    // if (data.report) {
+                    //     setReport(data.report);
+                    // }
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
