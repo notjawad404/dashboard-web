@@ -64,7 +64,6 @@ const MarketEvaluation = () => {
                 })
                 .finally(() => {
                     setLoading(false);
-                    setSearchInitiated(false); // Reset search initiation flag
                 });
         }
     }, [searchInitiated, brand, model, year, fuel]);
@@ -112,17 +111,15 @@ const MarketEvaluation = () => {
                     ))}
                 </select>
 
-                            {/* Search button */}
-            <button
-            onClick={handleSearch}
-            className="bg-gray-500 text-white px-4 py-2 rounded"
-            disabled={!brand || !model || !year || !fuel}
-        >
-            Search
-        </button>
+                {/* Search button */}
+                <button
+                    onClick={handleSearch}
+                    className="bg-gray-500 text-white px-4 py-2 rounded"
+                    disabled={!brand || !model || !year || !fuel}
+                >
+                    Search
+                </button>
             </div>
-
-
 
             {/* Display loading, error or results */}
             {loading && <p>Loading...</p>}
