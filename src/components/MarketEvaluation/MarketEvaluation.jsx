@@ -3,11 +3,10 @@ import { useEffect, useState, useMemo } from 'react';
 const MarketEvaluation = () => {
     const [cars, setCars] = useState([]);
     const [stats, setStats] = useState(null);
-    // const [report, setReport] = useState('');
     const [featuredCarImage, setFeaturedCarImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [searchInitiated, setSearchInitiated] = useState(false);
+    const [searchPerformed, setSearchPerformed] = useState(false);
 
     // Dropdown selections
     const [brand, setBrand] = useState('');
@@ -26,9 +25,8 @@ const MarketEvaluation = () => {
     const fuelTypes = ["gasoline", "diesel", "electric", "hybrid"];
     const years = useMemo(() => Array.from({ length: 2024 - 1950 + 1 }, (_, i) => (1950 + i).toString()), []);
 
-    // Fetch data when searchInitiated changes to true
     useEffect(() => {
-        if (searchInitiated) {
+        if (searchPerformed) {
             setLoading(true);
             setError(null);
             const url = `https://standvirtual-api.onrender.com/scrape-cars/?brand=${brand}&model=${model}&year=${year}&fuel=${fuel}&pages=1`;
@@ -54,9 +52,6 @@ const MarketEvaluation = () => {
                             ...data.stats
                         });
                     }
-                    // if (data.report) {
-                    //     setReport(data.report);
-                    // }
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
@@ -66,13 +61,11 @@ const MarketEvaluation = () => {
                     setLoading(false);
                 });
         }
-    }, [searchInitiated]);
+    }, [brand, model, year, fuel, searchPerformed]);
 
     const handleSearch = () => {
-        
         if (brand && model && year && fuel) {
-            setSearchInitiated(false);
-            setSearchInitiated(true);
+            setSearchPerformed(true);
         }
     };
 
@@ -126,7 +119,7 @@ const MarketEvaluation = () => {
             {/* Display loading, error or results */}
             {loading && <p>Loading...</p>}
             {error && <p>{error}</p>}
-            {!loading && !error && searchInitiated && (
+            {!loading && !error && searchPerformed && (
                 <div>
                     {/* Car Cards */}
                     <div className="flex flex-row">
