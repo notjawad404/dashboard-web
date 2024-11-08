@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const MarketEvaluation = () => {
     const [cars, setCars] = useState([]);
@@ -29,14 +28,9 @@ const MarketEvaluation = () => {
     const fuelTypes = ["gasoline", "diesel", "electric", "hybrid"];
     const years = useMemo(() => Array.from({ length: 2024 - 1950 + 1 }, (_, i) => (1950 + i).toString()), []);
 
-    const navigate = useNavigate();
-
     useEffect(() => {
         if (searchBrand && searchModel && searchYear && searchFuel) {
-            setCars([]);
-            setStats(null);
-            setFeaturedCarImage(null);
-            setReportHtml('');
+            
             setLoading(true);
             setError(null);
             const url = `https://standvirtual-api.onrender.com/scrape-cars/?brand=${searchBrand}&model=${searchModel}&year=${searchYear}&fuel=${searchFuel}&pages=1`;
@@ -63,6 +57,7 @@ const MarketEvaluation = () => {
                         });
                     }
                     if (data.report) {
+                        // Extract HTML content by removing the backticks and the "html" markdown tag
                         const htmlContent = data.report.replace(/```html|```/g, '');
                         setReportHtml(htmlContent);
                     }
@@ -84,12 +79,9 @@ const MarketEvaluation = () => {
         setSearchFuel(selectedFuel);
     };
 
-    const handleCardClick = (url) => {
-        window.open(url, '_blank', 'noopener,noreferrer');
-    };
-
     return (
         <div className="p-8">
+            {/* Dropdown menus for selections */}
             <div className="flex gap-4 mb-8">
                 <select value={selectedBrand} onChange={(e) => setSelectedBrand(e.target.value)} className="p-2 border rounded">
                     <option value="">Select Brand</option>
@@ -133,21 +125,19 @@ const MarketEvaluation = () => {
                 </button>
             </div>
 
+            {/* Display loading, error, or results */}
             {loading && <p>Loading...</p>}
             {error && <p>{error}</p>}
             {!loading && !error && (
                 <div>
+                    {/* Car Cards */}
                     <div className="flex flex-row">
                         {cars.length === 0 ? (
                             <p>No cars available for the selected options.</p>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 w-3/4">
                                 {cars.map((car, index) => (
-                                    <div
-                                        key={index}
-                                        className="bg-white shadow-md rounded-lg overflow-hidden cursor-pointer"
-                                        onClick={() => handleCardClick(car.Source_Url)}
-                                    >
+                                    <div key={index} className="bg-white shadow-md rounded-lg overflow-hidden">
                                         <img
                                             src={car.Image}
                                             alt={car.Brand}
@@ -185,6 +175,7 @@ const MarketEvaluation = () => {
                         </div>
                     </div>
 
+                    {/* Display Report */}
                     <div className="p-6 rounded-lg shadow-md">
                         <h2 className="text-xl font-semibold">Findings</h2>
                         <div
