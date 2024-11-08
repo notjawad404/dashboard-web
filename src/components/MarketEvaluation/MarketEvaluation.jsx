@@ -30,6 +30,10 @@ const MarketEvaluation = () => {
 
     useEffect(() => {
         if (searchBrand && searchModel && searchYear && searchFuel) {
+            setCars([]);
+        setStats(null);
+        setFeaturedCarImage(null);
+        setReportHtml('');
             setLoading(true);
             setError(null);
             const url = `https://standvirtual-api.onrender.com/scrape-cars/?brand=${searchBrand}&model=${searchModel}&year=${searchYear}&fuel=${searchFuel}&pages=1`;
@@ -137,6 +141,12 @@ const MarketEvaluation = () => {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 w-3/4">
                                 {cars.map((car, index) => (
                                     <div key={index} className="bg-white shadow-md rounded-lg overflow-hidden">
+                                    <a
+                                        href={car.Source_Url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="block"
+                                    >
                                         <img
                                             src={car.Image}
                                             alt={car.Brand}
@@ -146,7 +156,8 @@ const MarketEvaluation = () => {
                                             <h3 className="text-lg font-semibold">{car.Brand}</h3>
                                             <p> ${car.Price.toLocaleString()}</p>
                                         </div>
-                                    </div>
+                                    </a>
+                                </div>
                                 ))}
                             </div>
                         )}
