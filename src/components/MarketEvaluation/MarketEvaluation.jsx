@@ -147,25 +147,29 @@ const MarketEvaluation = () => {
                     </div>
                 )}
 
+                <div className='flex flex-col'>
                 <div className='w-1/4 flex flex-row'>
-                    {stats && (
-                        <div className="p-6 mb-8 flex flex-col">
-                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Brand</span><br/> {stats.brand}</p>
-                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Model</span><br/> {stats.model}</p>
-                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Year</span><br/> {stats.year}</p>
-                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Fuel</span><br/> {stats.fuel}</p>
-                            <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Condition</span><br/> {stats.condition}</p>
-                        </div>
-                    )}
-                    {featuredCarImage && (
-                        <div className="flex justify-center items-center">
-                            <img
-                                src={featuredCarImage}
-                                alt="Featured Car"
-                                className="w-40 h-40 mx-auto rounded-lg shadow-lg"
-                            />
-                        </div>
-                    )}
+                {stats && (
+                    <div className="p-6 mb-8 flex flex-col">
+                        <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Brand</span><br/> {stats.brand}</p>
+                        <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Model</span><br/> {stats.model}</p>
+                        <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Year</span><br/> {stats.year}</p>
+                        <p className='font-semibold text-sm py-3'><span className='font-normal text-gray-500'>Fuel</span><br/> {stats.fuel}</p>
+                    </div>
+                )}
+                {featuredCarImage && (
+                    <div className="flex justify-center items-center px-4">
+                        <img
+                            src={featuredCarImage}
+                            alt="Featured Car"
+                            className="w-32 h-32 mx-auto rounded-lg"
+                        />
+                    </div>
+                )}
+            </div>
+            <div>
+            
+            </div>
                 </div>
             </div>
 
