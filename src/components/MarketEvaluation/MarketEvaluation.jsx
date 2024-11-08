@@ -64,6 +64,7 @@ const MarketEvaluation = () => {
                 })
                 .finally(() => {
                     setLoading(false);
+                    setSearchInitiated(false);
                 });
         }
     }, [searchInitiated]);
