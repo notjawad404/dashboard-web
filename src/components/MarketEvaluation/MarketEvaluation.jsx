@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 const MarketEvaluation = () => {
     const [cars, setCars] = useState([]);
@@ -29,7 +29,7 @@ const MarketEvaluation = () => {
     const fuelTypes = ["gasoline", "diesel", "electric", "hybrid"];
     const years = useMemo(() => Array.from({ length: 2024 - 1950 + 1 }, (_, i) => (1950 + i).toString()), []);
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     useEffect(() => {
         if (searchBrand && searchModel && searchYear && searchFuel) {
