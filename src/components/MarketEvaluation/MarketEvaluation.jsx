@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const MarketEvaluation = () => {
     const [cars, setCars] = useState([]);
@@ -6,14 +7,13 @@ const MarketEvaluation = () => {
     const [featuredCarImage, setFeaturedCarImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [reportHtml, setReportHtml] = useState('');
 
-    // Dropdown selections for input values
     const [selectedBrand, setSelectedBrand] = useState('');
     const [selectedModel, setSelectedModel] = useState('');
     const [selectedYear, setSelectedYear] = useState('');
     const [selectedFuel, setSelectedFuel] = useState('');
 
-    // Search parameters that trigger the search
     const [searchBrand, setSearchBrand] = useState('');
     const [searchModel, setSearchModel] = useState('');
     const [searchYear, setSearchYear] = useState('');
@@ -29,13 +29,34 @@ const MarketEvaluation = () => {
     const fuelTypes = ["gasoline", "diesel", "electric", "hybrid"];
     const years = useMemo(() => Array.from({ length: 2024 - 1950 + 1 }, (_, i) => (1950 + i).toString()), []);
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         if (searchBrand && searchModel && searchYear && searchFuel) {
+            setCars([]);
+            setStats(null);
+            setFeaturedCarImage(null);
+            setReportHtml('');
             setLoading(true);
             setError(null);
-            const url = `https://standvirtual-api.onrender.com/scrape-cars/?brand=${searchBrand}&model=${searchModel}&year=${searchYear}&fuel=${searchFuel}&pages=1`;
-
-            fetch(url, { method: 'POST' })
+            
+            const url = 'https://standvirtual-api.onrender.com/scrape-cars/';
+            const requestData = {
+                brand: searchBrand,
+                model: searchModel,
+                year: searchYear,
+                fuel: searchFuel,
+                pages: 1
+            };
+    
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -56,6 +77,10 @@ const MarketEvaluation = () => {
                             ...data.stats
                         });
                     }
+                    if (data.report) {
+                        const htmlContent = data.report.replace(/```html|```/g, '');
+                        setReportHtml(htmlContent);
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
@@ -66,18 +91,21 @@ const MarketEvaluation = () => {
                 });
         }
     }, [searchBrand, searchModel, searchYear, searchFuel]);
+    
 
     const handleSearch = () => {
-        // Set the search parameters to the selected values to trigger the search
         setSearchBrand(selectedBrand);
         setSearchModel(selectedModel);
         setSearchYear(selectedYear);
         setSearchFuel(selectedFuel);
     };
 
+    const handleCardClick = (url) => {
+        window.open(url, '_blank', 'noopener,noreferrer');
+    };
+
     return (
         <div className="p-8">
-            {/* Dropdown menus for selections */}
             <div className="flex gap-4 mb-8">
                 <select value={selectedBrand} onChange={(e) => setSelectedBrand(e.target.value)} className="p-2 border rounded">
                     <option value="">Select Brand</option>
@@ -112,7 +140,6 @@ const MarketEvaluation = () => {
                     ))}
                 </select>
 
-                {/* Search button */}
                 <button
                     onClick={handleSearch}
                     className="bg-gray-500 text-white px-4 py-2 rounded"
@@ -122,19 +149,21 @@ const MarketEvaluation = () => {
                 </button>
             </div>
 
-            {/* Display loading, error, or results */}
             {loading && <p>Loading...</p>}
             {error && <p>{error}</p>}
             {!loading && !error && (
                 <div>
-                    {/* Car Cards */}
                     <div className="flex flex-row">
                         {cars.length === 0 ? (
                             <p>No cars available for the selected options.</p>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 w-3/4">
                                 {cars.map((car, index) => (
-                                    <div key={index} className="bg-white shadow-md rounded-lg overflow-hidden">
+                                    <div
+                                        key={index}
+                                        className="bg-white shadow-md rounded-lg overflow-hidden cursor-pointer"
+                                        onClick={() => handleCardClick(car.Source_Url)}
+                                    >
                                         <img
                                             src={car.Image}
                                             alt={car.Brand}
@@ -149,7 +178,6 @@ const MarketEvaluation = () => {
                             </div>
                         )}
 
-                        {/* Stats and Featured Image */}
                         <div className='flex flex-col'>
                             <div className='w-1/4 flex flex-row'>
                                 {stats && (
@@ -173,27 +201,12 @@ const MarketEvaluation = () => {
                         </div>
                     </div>
 
-                    {/* Findings Section */}
                     <div className="p-6 rounded-lg shadow-md">
-                        <h2 className="text-xl font-semibold ">Findings:</h2>
-                        <div className="text-gray-800">
-                            <div>
-                                <h3>Price Range: $10,000 - $18,000</h3>
-                                <ul className="list-disc ml-6">
-                                    <li>Older Models (2016-2018): $10,000 - $12,000</li>
-                                    <li>Mid-Range Models (2019-2021): $13,000 - $15,000</li>
-                                    <li>Newer Models (2022-2023): $16,000 - $18,000, with higher trims and low mileage</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h3>Key Factors Affecting Price:</h3>
-                                <ul className="list-disc ml-6">
-                                    <li>Mileage: Over 100,000 km reduces value by ~20-30%</li>
-                                    <li>Trim Level: Higher trims add 10-15% over base models</li>
-                                </ul>
-                            </div>
-                            <p>Recommended Market Price: For a well-maintained car with mid-range features and mileage under 60,000 km, $13,000 - $15,000.</p>
-                        </div>
+                        <h2 className="text-xl font-semibold">Findings</h2>
+                        <div
+                            className="text-gray-800 mt-4"
+                            dangerouslySetInnerHTML={{ __html: reportHtml }}
+                        />
                     </div>
                 </div>
             )}
